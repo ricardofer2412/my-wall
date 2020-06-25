@@ -1,6 +1,6 @@
 import React from 'react'
 import { AppBar, IconButton, Toolbar, Typography, Button } from '@material-ui/core'
-
+import firebase from './firebase'
 
 const styles = {
   classes: {
@@ -24,6 +24,7 @@ class NavBar extends React.Component {
             Silver Logic Wall
         </Typography>
           <Button color="inherit" style={styles.classes}>Login</Button>
+          <Button onClick={() => firebase.auth().signOut()}>SingOut</Button>
         </Toolbar>
       </AppBar>
     )

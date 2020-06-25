@@ -3,27 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import firebase from "firebase";
+import {
+  BrowserRouter as Router,
+  Route,
+} from "react-router-dom";
+import NavBar from './components/NavBar';
+import Login from './components/Login';
+import Register from './components/Register'
+import { AuthProvider } from './components/services/Auth'
 
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAoCvqytUuQfy93hXFx3OVYK_KbpC14IeU",
-  authDomain: "wallproject-bbaee.firebaseapp.com",
-  databaseURL: "https://wallproject-bbaee.firebaseio.com",
-  projectId: "wallproject-bbaee",
-  storageBucket: "wallproject-bbaee.appspot.com",
-  messagingSenderId: "207084038275",
-  appId: "1:207084038275:web:1310a00b273322283f93b6",
-  measurementId: "G-CRNHD1LY7G"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <AuthProvider>
+    <Router>
+      <Route path="/" component={NavBar} />
+      <Route exact path="/" component={App} />
+      <Route exact path="/Login" component={Login} />
+      <Route exact path="/Register" component={Register} />
+    </Router>
+  </AuthProvider>,
   document.getElementById('root')
 );
 

@@ -1,9 +1,7 @@
 import * as firebase from 'firebase';
+import 'firebase/auth'
 
-
-const settings = { timestampsInSnapshots: true };
-
-const config = {
+const firebaseConfig = {
   apiKey: "AIzaSyAoCvqytUuQfy93hXFx3OVYK_KbpC14IeU",
   authDomain: "wallproject-bbaee.firebaseapp.com",
   databaseURL: "https://wallproject-bbaee.firebaseio.com",
@@ -13,8 +11,9 @@ const config = {
   appId: "1:207084038275:web:1310a00b273322283f93b6",
   measurementId: "G-CRNHD1LY7G"
 };
-firebase.initializeApp(config);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 
-firebase.firestore().settings(settings);
 
 export default firebase;

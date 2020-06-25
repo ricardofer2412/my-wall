@@ -1,4 +1,6 @@
-import React from 'react'
+
+import React from "react";
+import { useHistory } from "react-router-dom";
 import { AppBar, IconButton, Toolbar, Typography, Button } from '@material-ui/core'
 import firebase from './firebase'
 
@@ -9,11 +11,19 @@ const styles = {
     justifyContent: 'space-between'
   }
 }
-class NavBar extends React.Component {
+function NavBar({ currentUser }) {
+  const history = useHistory();
+
+  function onLogOut() {
+    firebase.auth().signOut();
+    window.location.href = "/";
+  }
+
+  function onLogIn() {
+    history.push("/Login");
+  }
 
 
-
-  render() {
     return (
       <AppBar position="static">
         <Toolbar>
@@ -23,12 +33,19 @@ class NavBar extends React.Component {
           <Typography variant="h6" style={styles.classes}>
             Silver Logic Wall
         </Typography>
-          <Button color="inherit" style={styles.classes}>Login</Button>
-          <Button onClick={() => firebase.auth().signOut()}>SingOut</Button>
+        {currentUser ? (
+          <Button id="log_out_button" onClick={onLogOut} color="inherit">
+            Log Out
+          </Button>
+        ) : (
+          <Button id="login_button" onClick={onLogIn} color="inherit">
+            Login
+          </Button>
+        )}
         </Toolbar>
       </AppBar>
     )
   }
-}
+
 
 export default NavBar

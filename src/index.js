@@ -3,28 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {
-  BrowserRouter as Router,
-  Route,
-} from "react-router-dom";
-import NavBar from './components/NavBar';
-import Login from './components/Login';
-import Register from './components/Register'
-import { AuthProvider } from './components/services/Auth'
 
 
 
-ReactDOM.render(
-  <AuthProvider>
-    <Router>
-      <Route path="/" component={NavBar} />
-      <Route exact path="/" component={App} />
-      <Route exact path="/Login" component={Login} />
-      <Route exact path="/Register" component={Register} />
-    </Router>
-  </AuthProvider>,
-  document.getElementById('root')
-);
+ReactDOM.render(<App />, document.getElementById('root'));
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

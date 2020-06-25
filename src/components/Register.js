@@ -1,9 +1,11 @@
-import React, { useCallBack } from 'react'
+import React, { useCallBack, useState } from 'react'
 import { withRouter } from 'react-router-dom'
 import firebase from './firebase'
 
 const Register = ({ history }) => {
+  const [ userName, name, password ] = useState('')
   const handleSignUp = useCallBack(async event => {
+
     event.preventDefault();
     const { email, password } = event.target.element;
     try {

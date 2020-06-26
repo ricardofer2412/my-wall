@@ -13,28 +13,44 @@ import Typography from '@material-ui/core/Typography';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import Add from '@material-ui/icons/Add';
+import Delete from '@material-ui/icons/Delete';
 
 
 const classes = {
-  botton: {
-    flex: 'flex',
-    flexDirection: "column-reverse",
-    color: 'red'
+
+  postList: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+
   },
   card: {
-    width: 300,
-    height: 100
+
+    marginButton: 20,
+    marginTop: 20,
+    width: 500
+
+  },
+  dialogText: {
+    width: 400,
+    hight: 300
   }
+
 }
 
 class Wall extends React.Component {
   constructor(props) {
+
     super(props)
+
     this.postRef = firebase.firestore().collection("posts")
     this.state = {
+      userId: '',
       content: '',
       key: '',
       postsList: [],
+      currentUser: this.userId,
       open: false
     }
   }
@@ -42,6 +58,7 @@ class Wall extends React.Component {
   componentDidMount() {
 
     this.getPosts()
+    console.log(this.userId)
   }
 
   async getPosts() {
@@ -73,7 +90,9 @@ class Wall extends React.Component {
   addPost = (e) => {
     e.preventDefault()
     const newPostsList = [...this.state.postsList, { content: this.state.content, key: this.state.key }]
+
     this.postRef.add({
+
       content: this.state.content
     })
       .then(res => {
@@ -86,12 +105,16 @@ class Wall extends React.Component {
   }
 
   deletePost = (id) => {
+
     this.postRef.doc(id).delete().then(() => {
       console.log("Post successfully deleted")
       this.props.history.push('/')
-    }).catch((error) => {
-      console.log('Error removing document: ', error)
+
     })
+      .catch((error) => {
+        console.log('Error removing document: ', error)
+      })
+
   }
 
   handleClickOpen = () => {
@@ -105,6 +128,8 @@ class Wall extends React.Component {
     })
   }
 
+
+
   render() {
     return (
       <div>
@@ -117,10 +142,13 @@ class Wall extends React.Component {
 
             </DialogContentText>
             <TextField
+              style={classes.dialogText}
               autoFocus
               InputProps={{ name: 'content' }}
               onChange={this.onChange}
               value={this.state.content}
+              multiline
+              rows={4}
               margin="dense"
               id="name"
               type="email"
@@ -141,15 +169,14 @@ class Wall extends React.Component {
           <Add />
         </Fab>
 
-        <Container>
+        <Container style={classes.postList}>
           {this.state.postsList.map(post =>
             <Card style={classes.card}>
               <CardContent>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  {post.key}
                   {post.content}
                 </Typography>
-                <button onClick={() => this.deletePost(post.key)} class="btn btn-danger">Delete</button>
+                <Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
               </CardContent>
             </Card>
           )}

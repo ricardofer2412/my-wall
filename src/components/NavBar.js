@@ -11,41 +11,41 @@ const styles = {
     justifyContent: 'space-between'
   }
 }
-function NavBar({ currentUser }) {
+function NavBar({ user }) {
   const history = useHistory();
 
   function onLogOut() {
     firebase.auth().signOut();
-    window.location.href = "/";
-  }
-
-  function onLogIn() {
     history.push("/Login");
   }
 
+  function onLogIn() {
+    history.push("/");
+  }
 
-    return (
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" style={styles.classes} color="inherit" aria-label="menu">
+  console.log(user)
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <IconButton edge="start" style={styles.classes} color="inherit" aria-label="menu">
 
-          </IconButton>
-          <Typography variant="h6" style={styles.classes}>
-            Silver Logic Wall
+        </IconButton>
+        <Typography variant="h6" style={styles.classes}>
+          Silver Logic Wall
         </Typography>
-        {currentUser ? (
+        {user ? (
           <Button id="log_out_button" onClick={onLogOut} color="inherit">
             Log Out
           </Button>
         ) : (
-          <Button id="login_button" onClick={onLogIn} color="inherit">
-            Login
-          </Button>
-        )}
-        </Toolbar>
-      </AppBar>
-    )
-  }
+            <Button id="login_button" onClick={onLogIn} color="inherit">
+              Login
+            </Button>
+          )}
+      </Toolbar>
+    </AppBar>
+  )
+}
 
 
 export default NavBar

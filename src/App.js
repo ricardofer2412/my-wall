@@ -4,23 +4,27 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import NavBar from './components/NavBar';
 import Login from './components/Login';
 import Register from './components/Register'
-import {AuthProvider}  from "./components/services/Auth";
-import PrivateRoute from "./components/services/PrivateRoutes";
+import UserProvider from "./components/services/Auth";
 
 
-const App = () => {
+
+function App(user) {
+  console.log(user)
   return (
-   
-<AuthProvider>
-    <Router>
-    <Route  path="/" component={NavBar} />
-    <PrivateRoute exact path="/"  component={NavBar} />
-      <Route exact path="/" component={Wall} />
-      <Route exact path="/Login" component={Login} />
-      <Route exact path="/Register" component={Register} />
-    </Router>
-  </AuthProvider>
-    
+
+    <UserProvider>
+      <Router>
+        <Route path="/" render={() => <NavBar user={user} />} />
+        <Route exact path="/" render={() => <Wall user={user} />} />
+        {/* {!user && ( */}
+        <React.Fragment>
+          <Route exact path="/Login" component={Login} />
+          <Route exact path="/register" component={Register} />
+        </React.Fragment>
+        {/* )} */}
+      </Router>
+    </UserProvider>
+
   );
 }
 

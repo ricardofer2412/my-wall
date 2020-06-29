@@ -68,6 +68,8 @@ class Register extends React.Component {
 
   signUp = (e) => {
     e.preventDefault()
+    const { history } = this.props;
+
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(res => {
         const { uid } = res.user;
@@ -77,7 +79,7 @@ class Register extends React.Component {
           name: this.state.name,
           email: this.state.email
         })
-        this.props.history.push("/")
+        history.push("/");
 
       }).catch((error) => {
         console.log(error.code);

@@ -8,7 +8,8 @@ const styles = {
   classes: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    backgrounColor: 'red'
   },
   authButton: {
     display: 'flex',
@@ -36,7 +37,7 @@ function NavBar({ user }) {
     console.log('No user logged in')
   }
   return (
-    <AppBar position="static"  >
+    <AppBar position="static" style={{ background: '#33B8FF' }}  >
       <Toolbar style={styles.classes}>
         {/* <IconButton edge="start" color="inherit" aria-label="menu">
 
@@ -50,8 +51,9 @@ function NavBar({ user }) {
           </Button>
 
         ) : (
+          
             <Button id="log_out_button" onClick={onLogOut} color="inherit">
-              Log Out
+              Log Out 
             </Button>
           )}
       </Toolbar>

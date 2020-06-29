@@ -30,21 +30,20 @@ function Copyright() {
 
 const classes = {
   paper: {
-
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   avatar: {
-
-
   },
   form: {
     width: '100%',
-
   },
   submit: {
-
+    backgroundColor: '#33B8FF'
+  },
+  mainContainer:{
+    marginTop: 100
   },
 }
 
@@ -93,12 +92,10 @@ class Register extends React.Component {
 
   render() {
     return (
-      <Container component="main" maxWidth="xs">
+      <Container style={classes.mainContainer} component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
+         
           <Typography component="h1" variant="h5">
             Sign Up
       </Typography>
@@ -154,7 +151,7 @@ class Register extends React.Component {
               fullWidth
               variant="contained"
               color="primary"
-              className={classes.submit}
+              style={classes.submit}
               onClick={this.signUp}
             >
               Sign Up

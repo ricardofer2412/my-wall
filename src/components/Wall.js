@@ -15,7 +15,7 @@ import Container from '@material-ui/core/Container';
 import Add from '@material-ui/icons/Add';
 import Delete from '@material-ui/icons/Delete';
 import { useHistory, withRouter } from "react-router-dom";
-
+import Tooltip from '@material-ui/core/Tooltip';
 
 const uuid = require("uuid");
 const classes = {
@@ -28,7 +28,6 @@ const classes = {
 
   },
   card: {
-
     marginButton: 20,
     marginTop: 20,
     width: 500
@@ -38,19 +37,40 @@ const classes = {
     width: 500,
     hight: 300
   },
-  button: {
+  buttonEnable: {
     margin: 0,
     top: 'auto',
     right: 20,
     bottom: 20,
     left: 'auto',
     position: 'fixed',
+    color: 'white', 
+    backgroundColor: '#33B8FF'
+  },
+  buttonDisable: {
+    margin: 0,
+    top: 'auto',
+    right: 20,
+    bottom: 20,
+    left: 'auto',
+    position: 'fixed',
+    color: '#33B8FF', 
+    backgroundColor: '#ECF2F5'
+  },
+  deleteIcon: {
+    color: '#14486'
   },
   userName: {
-    color: 'blue'
+    color: '#144864'
   },
   postText: {
     fontSize: 25
+  }, 
+  cardButtom: {
+    display: 'flex', 
+    flexDirection: 'row', 
+    justifyContent: 'space-between'
+    
   }
 
 }
@@ -75,28 +95,15 @@ class Wall extends React.Component {
   }
 
 
-  // authListener() {
-  //   firebase.auth().onAuthStateChanged((user) => {
-  //     if (user) {
-  //       this.setState({ user, currentUser: user.uid })
-  //       console.log(" USER: " + this.state.currentUser)
-  //     }
-  //     else {
-  //       this.setState({ user: null })
-  //     }
-  //   })
-  // }
-
+  // Get Post and Current Logged in user!
   componentDidMount() {
-    // this.authListener()
     this.getPosts()
     this.currentUser()
-
   }
+
+// Function to get Users from Database
   currentUser = () => {
-
     firebase.auth().onAuthStateChanged((user) => {
-
       if (user) {
         const userId = user.uid
         firebase.firestore().collection("accounts")
@@ -119,7 +126,7 @@ class Wall extends React.Component {
   }
 
 
-
+// Function to get Posts from Database
   getPosts() {
     const postsList = []
     this.postRef.get().then(querySnapshot => {
@@ -145,10 +152,11 @@ class Wall extends React.Component {
     state[e.target.name] = e.target.value;
     this.setState(state);
   };
+
+
+//Function to create posts
   addPost = (e) => {
     e.preventDefault()
-
-
     const newPostsList = [...this.state.postsList,
     { content: this.state.content, key: this.state.key, postedBy: this.state.postedBy, postedById: this.state.postedById }]
     const postId = uuid()
@@ -172,8 +180,9 @@ class Wall extends React.Component {
     this.getPosts()
   }
 
-  deletePost = (id) => {
 
+  //delete post by postId 
+  deletePost = (id) => {
     this.postRef.doc(id).delete().then(() => {
       this.getPosts()
     })
@@ -182,6 +191,7 @@ class Wall extends React.Component {
       })
     // Delete from state
   }
+
 
   handleClickOpen = () => {
     this.setState({
@@ -201,7 +211,6 @@ class Wall extends React.Component {
 
   render() {
     const { user } = this.props
-
     return (
       <div>
         <Dialog
@@ -210,7 +219,6 @@ class Wall extends React.Component {
           <DialogTitle id="form-dialog-title">Add New Post</DialogTitle>
           <DialogContent>
             <DialogContentText>
-
             </DialogContentText>
             <TextField
               style={classes.dialogText}
@@ -236,17 +244,21 @@ class Wall extends React.Component {
           </DialogActions>
         </Dialog>
         <Container style={classes.button}>
+        <Tooltip title="Add Post" aria-label="add">
           {user ? (
-            <Fab onClick={this.handleClickOpen} style={classes.button} color='primary' aria-label=" add">
+            <Fab onClick={this.handleClickOpen} style={classes.buttonEnable}  aria-label=" add">
               <Add />
             </Fab>
           ) : (
-              <Fab onClick={this.disabledPost} style={classes.button} color='gray' aria-label=" add">
+              <Fab onClick={this.disabledPost} style={classes.buttonDisable}  aria-label=" add">
                 <Add />
               </Fab>
             )
           }
+           </Tooltip>
         </Container>
+
+        {/* This will render all post  */}
         <Container style={classes.postList}>
           {this.state.postsList.map(post =>
             <Card style={classes.card}>
@@ -255,17 +267,21 @@ class Wall extends React.Component {
                 <Typography style={classes.postText} color="textSecondary" gutterBottom>
                   {post.content}
                 </Typography>
-                <Typography style={classes.userName} color="textSecondary" gutterBottom>
+               
+                <Container style={classes.cardButtom}>
+           
+                {/* This will disable anothe user to delete, other user's post */}
+              
+                <Typography style={classes.userName}  gutterBottom>
                   @{post.postedBy}
                 </Typography>
-                <Typography style={{ color: 'red' }} color="textSecondary" gutterBottom>
-                  {post.postedById}
-
-                </Typography>
-
                 {user && this.state.postedBy === post.postedBy && (
-                  < Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
-                )}
+                   <Tooltip title="Delete Post" aria-label="add">
+                  < Delete onClick={() => this.deletePost(post.key)} variant='contained' style={{color:'#144864'}} />
+                  </Tooltip>
+              )}
+              </Container>
+                  
               </CardContent>
             </Card>
           )}

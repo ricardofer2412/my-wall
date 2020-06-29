@@ -29,22 +29,23 @@ function Copyright() {
 
 const classes = {
   paper: {
-
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
+  mainContainer:{
+    marginTop: 100
+  },
   avatar: {
-
-
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-
   },
   submit: {
-
   },
+  logingButton: {
+    backgroundColor: '#33B8FF'
+  }
 }
 
 
@@ -85,12 +86,10 @@ class Login extends React.Component {
   render() {
 
     return (
-      <Container component="main" maxWidth="xs">
+      <Container style={classes.mainContainer} component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
+        
           <Typography component="h1" variant="h5">
             Sign in
       </Typography>
@@ -133,7 +132,7 @@ class Login extends React.Component {
               fullWidth
               variant="contained"
               color="primary"
-              className={classes.submit}
+              style={classes.logingButton}
               onClick={this.login}
             >
               Sign In

@@ -4,28 +4,44 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import NavBar from './components/NavBar';
 import Login from './components/Login';
 import Register from './components/Register'
-import UserProvider from "./components/services/Auth";
+
+import firebase from './components/firebase'
 
 
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      user: {}
+    }
+  }
 
-function App(user) {
-  console.log(user)
-  return (
+  componentDidMount() {
+    this.authListener()
 
-    <UserProvider>
+  }
+  authListener() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ user })
+      }
+      else {
+        this.setState({ user: null })
+      }
+    })
+  }
+  render() {
+    console.log(this.state.user)
+    return (
       <Router>
-        <Route path="/" render={() => <NavBar user={user} />} />
-        <Route exact path="/" render={() => <Wall user={user} />} />
-        {/* {!user && ( */}
-        <React.Fragment>
-          <Route exact path="/Login" component={Login} />
-          <Route exact path="/register" component={Register} />
-        </React.Fragment>
-        {/* )} */}
+        <Route path="/" render={() => <NavBar user={this.state.user} />} />
+        <Route exact path="/" render={() => <Wall user={this.state.user} />} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/register" component={Register} />
       </Router>
-    </UserProvider>
 
-  );
+    )
+  }
 }
+export default App
 
-export default App;

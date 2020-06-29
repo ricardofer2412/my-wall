@@ -256,14 +256,14 @@ class Wall extends React.Component {
                   {post.content}
                 </Typography>
                 <Typography style={classes.userName} color="textSecondary" gutterBottom>
-                  @{post.postedBy},
+                  @{post.postedBy}
                 </Typography>
                 <Typography style={{ color: 'red' }} color="textSecondary" gutterBottom>
                   {post.postedById}
 
                 </Typography>
 
-                {user && this.state.currentUser === post.postedById && (
+                {user && this.state.postedBy === post.postedBy && (
                   < Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
                 )}
               </CardContent>

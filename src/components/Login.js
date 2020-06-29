@@ -33,7 +33,7 @@ const classes = {
     flexDirection: 'column',
     alignItems: 'center',
   },
-  mainContainer:{
+  mainContainer: {
     marginTop: 100
   },
   avatar: {
@@ -45,6 +45,11 @@ const classes = {
   },
   logingButton: {
     backgroundColor: '#33B8FF'
+  },
+  link: {
+    textDecoration: "underline",
+    color: "lightblue",
+    cursor: "pointer"
   }
 }
 
@@ -59,6 +64,10 @@ class Login extends React.Component {
       errorMessege: ''
     }
   }
+  goToRegister = () => {
+    const { history } = this.props;
+    history.push("/register");
+  };
 
   login(e) {
     e.preventDefault()
@@ -76,6 +85,7 @@ class Login extends React.Component {
       })
   }
 
+
   onChange = e => {
     const state = this.state;
     state[e.target.name] = e.target.value;
@@ -89,7 +99,7 @@ class Login extends React.Component {
       <Container style={classes.mainContainer} component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-        
+
           <Typography component="h1" variant="h5">
             Sign in
       </Typography>
@@ -142,9 +152,13 @@ class Login extends React.Component {
 
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                <Typography>
+                  Don't have an account yet?{" "}
+                  <span onClick={this.goToRegister}
+                    style={classes.link}>
+                    Register Now
+                </span>
+                </Typography>
               </Grid>
             </Grid>
           </form>

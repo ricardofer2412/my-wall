@@ -42,9 +42,15 @@ const classes = {
   submit: {
     backgroundColor: '#33B8FF'
   },
-  mainContainer:{
+  mainContainer: {
     marginTop: 100
   },
+  link: {
+    textDecoration: "underline",
+    color: "lightblue",
+    cursor: "pointer"
+  }
+
 }
 
 class Register extends React.Component {
@@ -89,13 +95,17 @@ class Register extends React.Component {
     state[e.target.name] = e.target.value;
     this.setState(state);
   };
+  goToLogin = () => {
+    const { history } = this.props;
+    history.push("/login");
+  };
 
   render() {
     return (
       <Container style={classes.mainContainer} component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-         
+
           <Typography component="h1" variant="h5">
             Sign Up
       </Typography>
@@ -156,7 +166,12 @@ class Register extends React.Component {
             >
               Sign Up
         </Button>
-            <Link href="./login">Already have an account?</Link>
+            <Typography>
+              Already have an account?{" "}
+              <span onClick={this.goToLogin} style={classes.link}>
+                Login instead
+                </span>
+            </Typography>
             <Grid container>
               <Grid item xs>
 

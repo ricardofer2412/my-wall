@@ -1,97 +1,183 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
+import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import firebase from './firebase'
+import Container from '@material-ui/core/Container';
 
-const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [error, setError] = useState(null);
-  const createUserWithEmailAndPasswordHandler = (event, email, password) => {
-    event.preventDefault();
-    setEmail('');
-    setPassword('');
-    setDisplayName('');
-  }
 
-  const onChangeHandler = event => {
-    const { name, value } = event.currentTarget;
-    if (name === 'userEmail') {
-      setEmail(value);
-    } else if (name === 'userPassword') {
-      setPassword(value);
-    } else if (name === 'displayName') {
-      setDisplayName(value)
+
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {'Copyright © '}
+      <Link color="inherit" >
+        SilverLogic
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
+const classes = {
+  paper: {
+
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+
+
+  },
+  form: {
+    width: '100%',
+
+  },
+  submit: {
+
+  },
+}
+
+class Register extends React.Component {
+  constructor(props) {
+    super(props)
+    this.accountRef = firebase.firestore().collection('accounts')
+
+    this.state = {
+      email: '',
+      password: '',
+      name: '',
+      errorMessage: ''
     }
   }
-  return (
-    <div className="mt-8">
-      <h1 className="text-3xl mb-2 text-center font-bold">Sign Up</h1>
-      <div className="border border-blue-400 mx-auto w-11/12 md:w-2/4 rounded py-8 px-4 md:px-8">
-        {error !== null && (
-          <div className="py-4 bg-red-600 w-full text-white text-center mb-3">
-            {error}
-          </div>
-        )}
-        <form className="">
-          <label htmlFor="displayName" className="block">
-            Display Name:
-          </label>
-          <input
-            type="text"
-            className="my-1 p-1 w-full "
-            name="displayName"
-            value={displayName}
-            placeholder="E.g: Faruq"
-            id="displayName"
-            onChange={event => onChangeHandler(event)}
-          />
-          <label htmlFor="userEmail" className="block">
-            Email:
-          </label>
-          <input
-            type="email"
-            className="my-1 p-1 w-full"
-            name="userEmail"
-            value={email}
-            placeholder="E.g: faruq123@gmail.com"
-            id="userEmail"
-            onChange={event => onChangeHandler(event)}
-          />
-          <label htmlFor="userPassword" className="block">
-            Password:
-          </label>
-          <input
-            type="password"
-            className="mt-1 mb-3 p-1 w-full"
-            name="userPassword"
-            value={password}
-            placeholder="Your Password"
-            id="userPassword"
-            onChange={event => onChangeHandler(event)}
-          />
-          <button
-            className="bg-green-400 hover:bg-green-500 w-full py-2 text-white"
-            onClick={event => {
-              createUserWithEmailAndPasswordHandler(event, email, password);
-            }}
-          >
-            Sign up
-          </button>
-        </form>
-        <p className="text-center my-3">or</p>
-        <button
-          className="bg-red-500 hover:bg-red-600 w-full py-2 text-white"
-        >
-          Sign In with Google
-        </button>
-        <p className="text-center my-3">
-          Already have an account?{" "}
-          <Link to="/" className="text-blue-500 hover:text-blue-600">
-            Sign in here
-          </Link>
-        </p>
-      </div>
-    </div>
-  );
+
+  signUp = (e) => {
+    e.preventDefault()
+    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(res => {
+        const { uid } = res.user;
+        console.log(uid)
+        this.accountRef.doc(uid).set({
+          userId: uid,
+          name: this.state.name,
+          email: this.state.email
+        })
+        this.props.history.push("/")
+
+      }).catch((error) => {
+        console.log(error.code);
+        console.log(error.message);
+        this.setState({
+          errorMessage: error.message
+        })
+      });
+
+
+  }
+
+  onChange = e => {
+    const state = this.state;
+    state[e.target.name] = e.target.value;
+    this.setState(state);
+  };
+
+  render() {
+    return (
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign Up
+      </Typography>
+          <form className={classes.form} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+
+              autoFocus
+              onChange={this.onChange}
+              value={this.state.name}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              onChange={this.onChange}
+              value={this.state.email}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={this.onChange}
+              value={this.state.password}
+            />
+            {this.state.errorMessage && (
+              <Typography style={{ color: 'red' }}>{this.state.errorMessage}</Typography>
+            )}
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={this.signUp}
+            >
+              Sign Up
+        </Button>
+            <Link href="./login">Already have an account?</Link>
+            <Grid container>
+              <Grid item xs>
+
+              </Grid>
+              <Grid item>
+
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
+    )
+  }
+
 };
+
+
 export default Register;

@@ -14,8 +14,10 @@ import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import Add from '@material-ui/icons/Add';
 import Delete from '@material-ui/icons/Delete';
+import { useHistory, withRouter } from "react-router-dom";
 
 
+const uuid = require("uuid");
 const classes = {
 
   postList: {
@@ -33,47 +35,98 @@ const classes = {
 
   },
   dialogText: {
-    width: 400,
+    width: 500,
     hight: 300
+  },
+  button: {
+    margin: 0,
+    top: 'auto',
+    right: 20,
+    bottom: 20,
+    left: 'auto',
+    position: 'fixed',
   }
 
 }
 
 class Wall extends React.Component {
   constructor(props) {
-
     super(props)
-
     this.postRef = firebase.firestore().collection("posts")
+    this.accountRef = firebase.firestore().collection("accounts")
     this.state = {
-      userId: '',
+      postId: '',
       content: '',
+      userId: '',
       key: '',
       postsList: [],
-      currentUser: this.userId,
-      open: false
+      user: '',
+      open: false,
+      currentUser: '',
+      postedBy: ''
     }
   }
 
-  componentDidMount() {
 
+  // authListener() {
+  //   firebase.auth().onAuthStateChanged((user) => {
+  //     if (user) {
+  //       this.setState({ user, currentUser: user.uid })
+  //       console.log(" USER: " + this.state.currentUser)
+  //     }
+  //     else {
+  //       this.setState({ user: null })
+  //     }
+  //   })
+  // }
+
+  componentDidMount() {
+    // this.authListener()
     this.getPosts()
-    console.log(this.userId)
+    // this.currentUser()
+
+  }
+  currentUser = () => {
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('USER ID: ' + user.uid)
+        this.setState({
+          currentUser: user.uid
+        })
+      } else {
+        console.log('user does not exist')
+      }
+    })
+    this.accountRef
+      .doc(this.state.currentUser)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          console.log(doc.data().name)
+          console.log(doc.data().userId)
+          this.setState({
+            postedBy: doc.data().name
+          })
+        } else {
+          console.log('Document does not exist')
+        }
+      })
   }
 
-  async getPosts() {
+
+  getPosts() {
     const postsList = []
-    await this.postRef.get().then(querySnapshot => {
+    this.postRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        const { content } = doc.data()
-        console.log(doc.data().content)
+        const { content, postedBy } = doc.data()
         postsList.push(
           {
             key: doc.id,
-            content
+            content,
+            postedBy
           }
         )
-
       })
       this.setState({
         postsList
@@ -89,32 +142,37 @@ class Wall extends React.Component {
   };
   addPost = (e) => {
     e.preventDefault()
-    const newPostsList = [...this.state.postsList, { content: this.state.content, key: this.state.key }]
-
-    this.postRef.add({
-
-      content: this.state.content
+    var user = firebase.auth().currentUser;
+    var uid = user.uid
+    const newPostsList = [...this.state.postsList, { content: this.state.content, key: this.state.key, postedBy: this.state.postedBy }]
+    const postId = uuid()
+    this.postRef.doc(postId).set({
+      content: this.state.content,
+      postId: postId,
+      postedBy: uid,
+      date: Date.now()
     })
       .then(res => {
         this.setState({
           postsList: newPostsList,
           content: '',
+          postId: '',
+          postedBy: ''
         })
       })
     this.handleClickClose()
+    this.getPosts()
   }
 
   deletePost = (id) => {
 
     this.postRef.doc(id).delete().then(() => {
-      console.log("Post successfully deleted")
-      this.props.history.push('/')
-
+      this.getPosts()
     })
       .catch((error) => {
         console.log('Error removing document: ', error)
       })
-
+    // Delete from state
   }
 
   handleClickOpen = () => {
@@ -127,10 +185,15 @@ class Wall extends React.Component {
       open: false, content: '',
     })
   }
+  disabledPost = () => {
+    alert("Need to Login to post")
+  }
 
 
 
   render() {
+    const { user } = this.props
+
     return (
       <div>
         <Dialog
@@ -164,11 +227,18 @@ class Wall extends React.Component {
           </Button>
           </DialogActions>
         </Dialog>
-
-        <Fab onClick={this.handleClickOpen} style={classes.button} color='primary' aria-label=" add">
-          <Add />
-        </Fab>
-
+        <Container style={classes.button}>
+          {user ? (
+            <Fab onClick={this.handleClickOpen} style={classes.button} color='primary' aria-label=" add">
+              <Add />
+            </Fab>
+          ) : (
+              <Fab onClick={this.disabledPost} style={classes.button} color='gray' aria-label=" add">
+                <Add />
+              </Fab>
+            )
+          }
+        </Container>
         <Container style={classes.postList}>
           {this.state.postsList.map(post =>
             <Card style={classes.card}>
@@ -176,7 +246,9 @@ class Wall extends React.Component {
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
                   {post.content}
                 </Typography>
-                <Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
+                {user && user.uid === post.postedBy && (
+                  < Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
+                )}
               </CardContent>
             </Card>
           )}

@@ -51,7 +51,7 @@ const classes = {
 class Register extends React.Component {
   constructor(props) {
     super(props)
-    this.accountRef = firebase.firestore().collection('accounts')
+
 
     this.state = {
       email: '',
@@ -67,7 +67,7 @@ class Register extends React.Component {
       .then(res => {
         const { uid } = res.user;
         console.log(uid)
-        this.accountRef.doc(uid).set({
+        firebase.firestore().collection('accounts').doc(uid).set({
           userId: uid,
           name: this.state.name,
           email: this.state.email

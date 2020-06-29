@@ -45,6 +45,12 @@ const classes = {
     bottom: 20,
     left: 'auto',
     position: 'fixed',
+  },
+  userName: {
+    color: 'blue'
+  },
+  postText: {
+    fontSize: 25
   }
 
 }
@@ -53,7 +59,7 @@ class Wall extends React.Component {
   constructor(props) {
     super(props)
     this.postRef = firebase.firestore().collection("posts")
-    this.accountRef = firebase.firestore().collection("accounts")
+
     this.state = {
       postId: '',
       content: '',
@@ -63,7 +69,8 @@ class Wall extends React.Component {
       user: '',
       open: false,
       currentUser: '',
-      postedBy: ''
+      postedBy: '',
+      postedById: ''
     }
   }
 
@@ -83,36 +90,34 @@ class Wall extends React.Component {
   componentDidMount() {
     // this.authListener()
     this.getPosts()
-    // this.currentUser()
+    this.currentUser()
 
   }
   currentUser = () => {
 
     firebase.auth().onAuthStateChanged((user) => {
+
       if (user) {
-        console.log('USER ID: ' + user.uid)
-        this.setState({
-          currentUser: user.uid
-        })
-      } else {
-        console.log('user does not exist')
+        const userId = user.uid
+        firebase.firestore().collection("accounts")
+          .doc(userId)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              console.log(doc.data().name)
+              console.log(doc.data().userId)
+              this.setState({
+                postedBy: doc.data().name,
+                currentUser: doc.data().userId
+              })
+            } else {
+              console.log('Document does not exist')
+            }
+          })
       }
     })
-    this.accountRef
-      .doc(this.state.currentUser)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          console.log(doc.data().name)
-          console.log(doc.data().userId)
-          this.setState({
-            postedBy: doc.data().name
-          })
-        } else {
-          console.log('Document does not exist')
-        }
-      })
   }
+
 
 
   getPosts() {
@@ -142,22 +147,25 @@ class Wall extends React.Component {
   };
   addPost = (e) => {
     e.preventDefault()
-    var user = firebase.auth().currentUser;
-    var uid = user.uid
-    const newPostsList = [...this.state.postsList, { content: this.state.content, key: this.state.key, postedBy: this.state.postedBy }]
+
+
+    const newPostsList = [...this.state.postsList,
+    { content: this.state.content, key: this.state.key, postedBy: this.state.postedBy, postedById: this.state.postedById }]
     const postId = uuid()
     this.postRef.doc(postId).set({
       content: this.state.content,
       postId: postId,
-      postedBy: uid,
-      date: Date.now()
+      postedBy: this.state.postedBy,
+      date: Date.now(),
+      postedById: this.state.currentUser
     })
       .then(res => {
         this.setState({
           postsList: newPostsList,
           content: '',
           postId: '',
-          postedBy: ''
+          postedBy: '',
+          postedById: ''
         })
       })
     this.handleClickClose()
@@ -243,10 +251,19 @@ class Wall extends React.Component {
           {this.state.postsList.map(post =>
             <Card style={classes.card}>
               <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
+
+                <Typography style={classes.postText} color="textSecondary" gutterBottom>
                   {post.content}
                 </Typography>
-                {user && user.uid === post.postedBy && (
+                <Typography style={classes.userName} color="textSecondary" gutterBottom>
+                  @{post.postedBy},
+                </Typography>
+                <Typography style={{ color: 'red' }} color="textSecondary" gutterBottom>
+                  {post.postedById}
+
+                </Typography>
+
+                {user && this.state.currentUser === post.postedById && (
                   < Delete onClick={() => this.deletePost(post.key)} variant='contained' color='primary' />
                 )}
               </CardContent>

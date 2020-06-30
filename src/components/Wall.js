@@ -44,7 +44,7 @@ const classes = {
     bottom: 20,
     left: 'auto',
     position: 'fixed',
-    color: 'white', 
+    color: 'white',
     backgroundColor: '#33B8FF'
   },
   buttonDisable: {
@@ -54,7 +54,7 @@ const classes = {
     bottom: 20,
     left: 'auto',
     position: 'fixed',
-    color: '#33B8FF', 
+    color: '#33B8FF',
     backgroundColor: '#ECF2F5'
   },
   deleteIcon: {
@@ -65,12 +65,12 @@ const classes = {
   },
   postText: {
     fontSize: 25
-  }, 
+  },
   cardButtom: {
-    display: 'flex', 
-    flexDirection: 'row', 
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between'
-    
+
   }
 
 }
@@ -101,7 +101,7 @@ class Wall extends React.Component {
     this.currentUser()
   }
 
-// Function to get Users from Database
+  // Function to get Users from Database
   currentUser = () => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -126,7 +126,7 @@ class Wall extends React.Component {
   }
 
 
-// Function to get Posts from Database
+  // Function to get Posts from Database
   getPosts() {
     const postsList = []
     this.postRef.get().then(querySnapshot => {
@@ -154,7 +154,7 @@ class Wall extends React.Component {
   };
 
 
-//Function to create posts
+  //Function to create posts
   addPost = (e) => {
     e.preventDefault()
     const newPostsList = [...this.state.postsList,
@@ -229,7 +229,7 @@ class Wall extends React.Component {
               multiline
               rows={4}
               margin="dense"
-              id="name"
+              id="post_content_input"
               type="email"
               fullWidth
             />
@@ -238,24 +238,24 @@ class Wall extends React.Component {
             <Button onClick={this.handleClickClose} color="primary">
               Cancel
           </Button>
-            <Button onClick={this.addPost} color="primary" type='submit'>
+            <Button id="create_post_dialog_button" onClick={this.addPost} color="primary" type='submit'>
               Add
           </Button>
           </DialogActions>
         </Dialog>
         <Container style={classes.button}>
-        <Tooltip title="Add Post" aria-label="add">
-          {user ? (
-            <Fab onClick={this.handleClickOpen} style={classes.buttonEnable}  aria-label=" add">
-              <Add />
-            </Fab>
-          ) : (
-              <Fab onClick={this.disabledPost} style={classes.buttonDisable}  aria-label=" add">
+          <Tooltip title="Add Post" aria-label="add">
+            {user ? (
+              <Fab id="create_post_button" onClick={this.handleClickOpen} style={classes.buttonEnable} aria-label=" add">
                 <Add />
               </Fab>
-            )
-          }
-           </Tooltip>
+            ) : (
+                <Fab onClick={this.disabledPost} style={classes.buttonDisable} aria-label=" add">
+                  <Add />
+                </Fab>
+              )
+            }
+          </Tooltip>
         </Container>
 
         {/* This will render all post  */}
@@ -267,21 +267,21 @@ class Wall extends React.Component {
                 <Typography style={classes.postText} color="textSecondary" gutterBottom>
                   {post.content}
                 </Typography>
-               
+
                 <Container style={classes.cardButtom}>
-           
-                {/* This will disable anothe user to delete, other user's post */}
-              
-                <Typography style={classes.userName}  gutterBottom>
-                  @{post.postedBy}
-                </Typography>
-                {user && this.state.postedBy === post.postedBy && (
-                   <Tooltip title="Delete Post" aria-label="add">
-                  < Delete onClick={() => this.deletePost(post.key)} variant='contained' style={{color:'#144864'}} />
-                  </Tooltip>
-              )}
-              </Container>
-                  
+
+                  {/* This will disable anothe user to delete, other user's post */}
+
+                  <Typography style={classes.userName} gutterBottom>
+                    @{post.postedBy}
+                  </Typography>
+                  {user && this.state.postedBy === post.postedBy && (
+                    <Tooltip title="Delete Post" aria-label="add">
+                      < Delete onClick={() => this.deletePost(post.key)} variant='contained' style={{ color: '#144864' }} />
+                    </Tooltip>
+                  )}
+                </Container>
+
               </CardContent>
             </Card>
           )}

@@ -105,11 +105,12 @@ class Login extends React.Component {
       </Typography>
           <form className={classes.form} noValidate>
             <TextField
+
               variant="outlined"
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="email_input"
               label="Email Address"
               name="email"
               autoComplete="email"
@@ -125,7 +126,7 @@ class Login extends React.Component {
               name="password"
               label="Password"
               type="password"
-              id="password"
+              id="password_input"
               autoComplete="current-password"
               onChange={this.onChange}
               value={this.state.password}
@@ -138,6 +139,7 @@ class Login extends React.Component {
               label="Remember me"
             />
             <Button
+              id="auth_submit_button"
               type="submit"
               fullWidth
               variant="contained"

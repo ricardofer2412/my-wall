@@ -1,98 +1,94 @@
-import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import firebase from './firebase'
-import Container from '@material-ui/core/Container';
-
-
+import React from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import firebase from "./firebase";
+import Container from "@material-ui/core/Container";
+import { withRouter } from "react-router-dom";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" >
-        SilverLogic
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
+      {"Copyright © "}
+      <Link color="inherit">SilverLogic</Link> {new Date().getFullYear()}
+      {"."}
     </Typography>
   );
 }
 
 const classes = {
   paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
-  avatar: {
-  },
+  avatar: {},
   form: {
-    width: '100%',
+    width: "100%",
   },
   submit: {
-    backgroundColor: '#33B8FF'
+    backgroundColor: "#33B8FF",
   },
   mainContainer: {
-    marginTop: 100
+    marginTop: 100,
   },
   link: {
     textDecoration: "underline",
     color: "lightblue",
-    cursor: "pointer"
-  }
-
-}
+    cursor: "pointer",
+  },
+};
 
 class Register extends React.Component {
   constructor(props) {
-    super(props)
-
+    super(props);
 
     this.state = {
-      email: '',
-      password: '',
-      name: '',
-      errorMessage: ''
-    }
+      email: "",
+      password: "",
+      name: "",
+      errorMessage: "",
+    };
   }
 
-  signUp = (e) => {
-    e.preventDefault()
-    const { history } = this.props;
+  signUp = async (e) => {
+    e.preventDefault();
 
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(res => {
-        const { uid } = res.user;
-        console.log(uid)
-        firebase.firestore().collection('accounts').doc(uid).set({
-          userId: uid,
-          name: this.state.name,
-          email: this.state.email
-        })
-        history.push("/");
+    try {
+      const res = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password);
 
-      }).catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
-        this.setState({
-          errorMessage: error.message
-        })
+      const { uid } = res.user;
+      console.log(uid);
+
+      await firebase.firestore().collection("accounts").doc(uid).set({
+        userId: uid,
+        name: this.state.name,
+        email: this.state.email,
       });
 
+      console.log("HERE");
 
-  }
+      window.location.href = "/";
+    } catch (error) {
+      console.log(error.code);
+      console.log(error.message);
+      this.setState({
+        errorMessage: error.message,
+      });
+    }
+  };
 
-  onChange = e => {
+  onChange = (e) => {
     const state = this.state;
     state[e.target.name] = e.target.value;
     this.setState(state);
@@ -107,10 +103,9 @@ class Register extends React.Component {
       <Container style={classes.mainContainer} component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-
           <Typography component="h1" variant="h5">
             Sign Up
-      </Typography>
+          </Typography>
           <form className={classes.form} noValidate>
             <TextField
               variant="outlined"
@@ -120,7 +115,6 @@ class Register extends React.Component {
               id="name"
               label="Name"
               name="name"
-
               autoFocus
               onChange={this.onChange}
               value={this.state.name}
@@ -152,7 +146,9 @@ class Register extends React.Component {
               value={this.state.password}
             />
             {this.state.errorMessage && (
-              <Typography style={{ color: 'red' }}>{this.state.errorMessage}</Typography>
+              <Typography style={{ color: "red" }}>
+                {this.state.errorMessage}
+              </Typography>
             )}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -167,20 +163,16 @@ class Register extends React.Component {
               onClick={this.signUp}
             >
               Sign Up
-        </Button>
+            </Button>
             <Typography>
               Already have an account?{" "}
               <span onClick={this.goToLogin} style={classes.link}>
                 Login instead
-                </span>
+              </span>
             </Typography>
             <Grid container>
-              <Grid item xs>
-
-              </Grid>
-              <Grid item>
-
-              </Grid>
+              <Grid item xs></Grid>
+              <Grid item></Grid>
             </Grid>
           </form>
         </div>
@@ -188,10 +180,8 @@ class Register extends React.Component {
           <Copyright />
         </Box>
       </Container>
-    )
+    );
   }
+}
 
-};
-
-
-export default Register;
+export default withRouter(Register);
